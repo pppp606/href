@@ -1,0 +1,82 @@
+{
+  "name": "href",
+  "version": "0.1.0",
+  "description": "High-Resolution Edit Format - A comprehensive event capture and replay system for text editing interactions",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./recorder": {
+      "import": "./dist/recorder/index.js",
+      "types": "./dist/recorder/index.d.ts"
+    },
+    "./player": {
+      "import": "./dist/player/index.js",
+      "types": "./dist/player/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "npm run build:types && npm run build:bundles",
+    "build:types": "tsc",
+    "build:bundles": "node scripts/build.js",
+    "build:watch": "tsc --watch",
+    "dev": "serve . -p 3000",
+    "demo": "npm run build && npm run dev",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "validate:schema": "ajv compile -s src/core/schema.ts"
+  },
+  "keywords": [
+    "editing",
+    "event-capture",
+    "replay",
+    "ime",
+    "composition",
+    "text-editing",
+    "analytics",
+    "recorder",
+    "playback",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/href.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/href/issues"
+  },
+  "homepage": "https://github.com/yourusername/href#readme",
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/ui": "^2.1.8",
+    "ajv": "^8.17.1",
+    "ajv-cli": "^5.0.0",
+    "esbuild": "^0.25.12",
+    "eslint": "^9.17.0",
+    "jsdom": "^27.0.1",
+    "prettier": "^3.4.2",
+    "serve": "^14.2.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

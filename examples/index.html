@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HREF Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #000;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #888;
+    }
+
+    .editor-container {
+      margin-bottom: 1rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 1rem;
+      border: 1px solid #888;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #000;
+    }
+
+    #viewer {
+      min-height: 300px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #000;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    button:disabled {
+      border-color: #888;
+      color: #888;
+      cursor: not-allowed;
+      background: #fff;
+      opacity: 1;
+    }
+
+    button.primary {
+      background: #000;
+      color: #fff;
+    }
+
+    button.primary:disabled {
+      background: #888;
+      border-color: #888;
+      color: #fff;
+    }
+
+    .stats {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 1rem;
+    }
+
+    .timeline {
+      margin-bottom: 1rem;
+    }
+
+    .timeline-bar {
+      width: 100%;
+      height: 4px;
+      background: #f5f5f5;
+      border-radius: 2px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .timeline-progress {
+      height: 100%;
+      background: #000;
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .speed-control {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+      margin-left: auto;
+    }
+
+    .speed-btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 12px;
+    }
+
+    .divider {
+      height: 1px;
+      background: #888;
+      margin: 3rem 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>HREF Demo</h1>
+
+  <!-- Recorder Section -->
+  <div class="section">
+    <div class="section-title">Recorder</div>
+
+    <div class="editor-container">
+      <textarea id="editor" placeholder="Type here to record..."></textarea>
+    </div>
+
+    <div class="controls">
+      <button id="recStartBtn" class="primary">Start Recording</button>
+      <button id="recStopBtn" class="primary" disabled>Stop Recording</button>
+      <button id="recClearBtn">Clear</button>
+    </div>
+
+    <div class="stats" id="recStats">Ready to record</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Player Section -->
+  <div class="section">
+    <div class="section-title">Player</div>
+
+    <div class="editor-container">
+      <div id="viewer"></div>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-bar" id="timeline">
+        <div class="timeline-progress" id="progress"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="playBtn" class="primary" disabled>Play</button>
+      <button id="pauseBtn" class="primary" disabled>Pause</button>
+      <button id="stopBtn" disabled>Stop</button>
+
+      <div class="speed-control">
+        <span style="font-size: 12px; color: #888;">Speed:</span>
+        <button id="speed05" class="speed-btn">0.5x</button>
+        <button id="speed1" class="speed-btn">1x</button>
+        <button id="speed2" class="speed-btn">2x</button>
+      </div>
+    </div>
+
+    <div class="stats" id="playerStats">Record something above to play</div>
+  </div>
+
+  <script type="module">
+    import { HrefRecorder } from '../dist/recorder.bundle.js';
+    import { HrefPlayer } from '../dist/player.bundle.js';
+
+    // Recorder
+    let recorder = null;
+    let recStartTime = 0;
+
+    const editor = document.getElementById('editor');
+    const recStartBtn = document.getElementById('recStartBtn');
+    const recStopBtn = document.getElementById('recStopBtn');
+    const recClearBtn = document.getElementById('recClearBtn');
+    const recStats = document.getElementById('recStats');
+
+    // Player
+    let player = null;
+    let updateInterval = null;
+
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const speed05 = document.getElementById('speed05');
+    const speed1 = document.getElementById('speed1');
+    const speed2 = document.getElementById('speed2');
+    const playerStats = document.getElementById('playerStats');
+    const timeline = document.getElementById('timeline');
+    const progress = document.getElementById('progress');
+    const viewerContainer = document.getElementById('viewer');
+
+    // Initialize player
+    player = new HrefPlayer({
+      container: viewerContainer,
+      speed: 1.0,
+    });
+
+    // Recorder: Start
+    recStartBtn.addEventListener('click', () => {
+      recorder = new HrefRecorder({ target: editor });
+      recorder.start();
+      recStartTime = Date.now();
+
+      recStartBtn.disabled = true;
+      recStopBtn.disabled = false;
+      recStats.textContent = 'Recording...';
+      editor.focus();
+    });
+
+    // Recorder: Stop
+    recStopBtn.addEventListener('click', () => {
+      if (!recorder) return;
+
+      recorder.stop();
+      const doc = recorder.getDocument();
+      const elapsed = ((Date.now() - recStartTime) / 1000).toFixed(1);
+
+      recStartBtn.disabled = false;
+      recStopBtn.disabled = true;
+      recStats.textContent = `Recorded ${doc.events.length} events in ${elapsed}s`;
+
+      // Load into player
+      player.load(doc);
+      playBtn.disabled = false;
+      pauseBtn.disabled = true;
+      stopBtn.disabled = true;
+      playerStats.textContent = `Ready to play: ${elapsed}s (${doc.events.length} events)`;
+    });
+
+    // Recorder: Clear
+    recClearBtn.addEventListener('click', () => {
+      editor.value = '';
+      recStats.textContent = 'Ready to record';
+      playerStats.textContent = 'Record something above to play';
+      playBtn.disabled = true;
+      pauseBtn.disabled = true;
+      stopBtn.disabled = true;
+      progress.style.width = '0%';
+    });
+
+    // Player: Update UI
+    function updateUI() {
+      if (!player) return;
+
+      const state = player.getState();
+      const currentSeconds = (state.currentTime / 1000).toFixed(1);
+      const durationSeconds = (state.duration / 1000).toFixed(1);
+      const progressPercent = state.duration > 0
+        ? (state.currentTime / state.duration * 100).toFixed(1)
+        : 0;
+
+      playerStats.textContent = `${currentSeconds}s / ${durationSeconds}s (${state.speed}x)`;
+      progress.style.width = `${progressPercent}%`;
+
+      // Auto-stop at end
+      if (state.isPlaying && state.currentTime >= state.duration) {
+        player.stop();
+        clearInterval(updateInterval);
+        playBtn.disabled = false;
+        pauseBtn.disabled = true;
+        stopBtn.disabled = true;
+      }
+    }
+
+    // Player: Play
+    playBtn.addEventListener('click', () => {
+      player.play();
+      playBtn.disabled = true;
+      pauseBtn.disabled = false;
+      stopBtn.disabled = false;
+
+      updateInterval = setInterval(updateUI, 100);
+    });
+
+    // Player: Pause
+    pauseBtn.addEventListener('click', () => {
+      player.pause();
+      playBtn.disabled = false;
+      pauseBtn.disabled = true;
+
+      clearInterval(updateInterval);
+      updateUI();
+    });
+
+    // Player: Stop
+    stopBtn.addEventListener('click', () => {
+      player.stop();
+      playBtn.disabled = false;
+      pauseBtn.disabled = true;
+      stopBtn.disabled = true;
+
+      clearInterval(updateInterval);
+      updateUI();
+    });
+
+    // Player: Speed controls
+    speed05.addEventListener('click', () => {
+      player.setSpeed(0.5);
+      updateUI();
+    });
+
+    speed1.addEventListener('click', () => {
+      player.setSpeed(1.0);
+      updateUI();
+    });
+
+    speed2.addEventListener('click', () => {
+      player.setSpeed(2.0);
+      updateUI();
+    });
+
+    // Player: Timeline seeking
+    timeline.addEventListener('click', (e) => {
+      if (!player) return;
+
+      const rect = timeline.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const percent = x / rect.width;
+      const state = player.getState();
+      const seekTime = percent * state.duration;
+
+      player.seek(seekTime);
+      updateUI();
+    });
+  </script>
+</body>
+</html>

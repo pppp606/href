@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HREF Bundle Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1 {
+      color: #333;
+    }
+    .test-section {
+      margin: 2rem 0;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .test-section h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #666;
+    }
+    .status {
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 4px;
+    }
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>HREF Bundle Test</h1>
+
+  <div class="test-section">
+    <h2>Recorder Bundle Test</h2>
+    <div id="recorder-status"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Player Bundle Test</h2>
+    <div id="player-status"></div>
+  </div>
+
+  <script type="module">
+    // Test Recorder
+    try {
+      const { HrefRecorder } = await import('../dist/recorder.bundle.js');
+
+      const recorder = new HrefRecorder();
+      recorder.start();
+      recorder.stop();
+      const doc = recorder.getDocument();
+
+      document.getElementById('recorder-status').innerHTML = `
+        <div class="status success">✓ Recorder bundle loaded successfully</div>
+        <pre>${JSON.stringify(doc, null, 2)}</pre>
+      `;
+    } catch (error) {
+      document.getElementById('recorder-status').innerHTML = `
+        <div class="status error">✗ Recorder bundle failed: ${error.message}</div>
+      `;
+    }
+
+    // Test Player
+    try {
+      const { HrefPlayer } = await import('../dist/player.bundle.js');
+
+      const player = new HrefPlayer({ speed: 1.5 });
+      const sampleDoc = {
+        version: '0.1',
+        session: {
+          id: 'test-session',
+          user_agent: navigator.userAgent,
+          lang: 'ja',
+          device: 'desktop',
+          source: 'test'
+        },
+        initial_text: '',
+        events: []
+      };
+
+      player.load(sampleDoc);
+      const state = player.getState();
+
+      document.getElementById('player-status').innerHTML = `
+        <div class="status success">✓ Player bundle loaded successfully</div>
+        <pre>${JSON.stringify(state, null, 2)}</pre>
+      `;
+    } catch (error) {
+      document.getElementById('player-status').innerHTML = `
+        <div class="status error">✗ Player bundle failed: ${error.message}</div>
+      `;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HREF Player</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #000;
+      padding: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+
+    .file-input-container {
+      margin-bottom: 2rem;
+    }
+
+    input[type="file"] {
+      padding: 0.5rem;
+      border: 1px solid #888;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .viewer-container {
+      margin-bottom: 2rem;
+    }
+
+    #viewer {
+      min-height: 300px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      align-items: center;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #000;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    button:disabled {
+      border-color: #888;
+      color: #888;
+      cursor: not-allowed;
+      background: #fff;
+      opacity: 1;
+    }
+
+    button.primary {
+      background: #000;
+      color: #fff;
+    }
+
+    button.primary:disabled {
+      background: #888;
+      border-color: #888;
+      color: #fff;
+    }
+
+    .speed-control {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+      margin-left: auto;
+    }
+
+    .speed-btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 12px;
+    }
+
+    .stats {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 1rem;
+    }
+
+    .timeline {
+      margin-bottom: 2rem;
+    }
+
+    .timeline-bar {
+      width: 100%;
+      height: 4px;
+      background: #f5f5f5;
+      border-radius: 2px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .timeline-progress {
+      height: 100%;
+      background: #000;
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+  </style>
+</head>
+<body>
+  <h1>HREF Player</h1>
+
+  <div class="file-input-container">
+    <input type="file" id="fileInput" accept=".json,.href.json,.jsonl,.href.jsonl">
+  </div>
+
+  <div class="viewer-container">
+    <div id="viewer"></div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-bar" id="timeline">
+      <div class="timeline-progress" id="progress"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="playBtn" class="primary" disabled>Play</button>
+    <button id="pauseBtn" class="primary" disabled>Pause</button>
+    <button id="stopBtn" disabled>Stop</button>
+
+    <div class="speed-control">
+      <span style="font-size: 12px; color: #888;">Speed:</span>
+      <button id="speed05" class="speed-btn">0.5x</button>
+      <button id="speed1" class="speed-btn">1x</button>
+      <button id="speed2" class="speed-btn">2x</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats">Load a recording file to play</div>
+
+  <script type="module">
+    import { HrefPlayer } from '../dist/player.bundle.js';
+
+    const fileInput = document.getElementById('fileInput');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const speed05 = document.getElementById('speed05');
+    const speed1 = document.getElementById('speed1');
+    const speed2 = document.getElementById('speed2');
+    const stats = document.getElementById('stats');
+    const timeline = document.getElementById('timeline');
+    const progress = document.getElementById('progress');
+    const viewerContainer = document.getElementById('viewer');
+
+    let player = null;
+    let updateInterval = null;
+
+    // Initialize player
+    player = new HrefPlayer({
+      container: viewerContainer,
+      speed: 1.0,
+    });
+
+    // Update stats and progress
+    function updateUI() {
+      if (!player) return;
+
+      const state = player.getState();
+      const currentSeconds = (state.currentTime / 1000).toFixed(1);
+      const durationSeconds = (state.duration / 1000).toFixed(1);
+      const progressPercent = state.duration > 0
+        ? (state.currentTime / state.duration * 100).toFixed(1)
+        : 0;
+
+      stats.textContent = `${currentSeconds}s / ${durationSeconds}s (${state.speed}x)`;
+      progress.style.width = `${progressPercent}%`;
+
+      // Auto-stop at end
+      if (state.isPlaying && state.currentTime >= state.duration) {
+        player.stop();
+        clearInterval(updateInterval);
+        playBtn.disabled = false;
+        pauseBtn.disabled = true;
+        stopBtn.disabled = true;
+      }
+    }
+
+    // Load file
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        player.loadJSON(text);
+
+        playBtn.disabled = false;
+        pauseBtn.disabled = true;
+        stopBtn.disabled = true;
+
+        const state = player.getState();
+        stats.textContent = `Loaded: ${state.duration / 1000}s (${player.getState().textState.text.length} chars)`;
+      } catch (error) {
+        stats.textContent = `Error loading file: ${error.message}`;
+      }
+    });
+
+    // Play
+    playBtn.addEventListener('click', () => {
+      player.play();
+      playBtn.disabled = true;
+      pauseBtn.disabled = false;
+      stopBtn.disabled = false;
+
+      updateInterval = setInterval(updateUI, 100);
+    });
+
+    // Pause
+    pauseBtn.addEventListener('click', () => {
+      player.pause();
+      playBtn.disabled = false;
+      pauseBtn.disabled = true;
+
+      clearInterval(updateInterval);
+      updateUI();
+    });
+
+    // Stop
+    stopBtn.addEventListener('click', () => {
+      player.stop();
+      playBtn.disabled = false;
+      pauseBtn.disabled = true;
+      stopBtn.disabled = true;
+
+      clearInterval(updateInterval);
+      updateUI();
+    });
+
+    // Speed controls
+    speed05.addEventListener('click', () => {
+      player.setSpeed(0.5);
+      updateUI();
+    });
+
+    speed1.addEventListener('click', () => {
+      player.setSpeed(1.0);
+      updateUI();
+    });
+
+    speed2.addEventListener('click', () => {
+      player.setSpeed(2.0);
+      updateUI();
+    });
+
+    // Timeline seeking
+    timeline.addEventListener('click', (e) => {
+      if (!player) return;
+
+      const rect = timeline.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const percent = x / rect.width;
+      const state = player.getState();
+      const seekTime = percent * state.duration;
+
+      player.seek(seekTime);
+      updateUI();
+    });
+  </script>
+</body>
+</html>

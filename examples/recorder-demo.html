@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HREF Recorder</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #000;
+      padding: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+
+    .editor-container {
+      margin-bottom: 2rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 1rem;
+      border: 1px solid #888;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #000;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #000;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    button:disabled {
+      border-color: #888;
+      color: #888;
+      cursor: not-allowed;
+      background: #fff;
+      opacity: 1;
+    }
+
+    button.primary {
+      background: #000;
+      color: #fff;
+    }
+
+    button.primary:disabled {
+      background: #888;
+      border-color: #888;
+      color: #fff;
+    }
+
+    .output {
+      background: #f5f5f5;
+      border: 1px solid #888;
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .stats {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>HREF Recorder</h1>
+
+  <div class="editor-container">
+    <textarea id="editor" placeholder="Type here..."></textarea>
+  </div>
+
+  <div class="controls">
+    <button id="startBtn" class="primary">Start</button>
+    <button id="stopBtn" class="primary" disabled>Stop</button>
+    <button id="exportBtn" disabled>Export JSON</button>
+  </div>
+
+  <div class="stats" id="stats">Ready</div>
+
+  <div class="output" id="output">No data</div>
+
+  <script type="module">
+    import { HrefRecorder } from '../dist/recorder.bundle.js';
+
+    let recorder = null;
+    let startTime = 0;
+
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const editor = document.getElementById('editor');
+    const stats = document.getElementById('stats');
+    const output = document.getElementById('output');
+
+    startBtn.addEventListener('click', () => {
+      recorder = new HrefRecorder({ target: editor });
+      recorder.start();
+      startTime = Date.now();
+
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+      exportBtn.disabled = true;
+
+      stats.textContent = 'Recording...';
+      editor.focus();
+    });
+
+    stopBtn.addEventListener('click', () => {
+      if (!recorder) return;
+
+      recorder.stop();
+      const doc = recorder.getDocument();
+
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      exportBtn.disabled = false;
+
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      stats.textContent = `Recorded ${doc.events.length} events in ${elapsed}s`;
+      output.textContent = JSON.stringify(doc, null, 2);
+    });
+
+    exportBtn.addEventListener('click', () => {
+      if (!recorder) return;
+
+      const json = recorder.exportJSON();
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `recording-${Date.now()}.href.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
