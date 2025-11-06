@@ -10,4 +10,5 @@ export { StateReconstructor } from './state.js';
 export { TextViewer } from './viewer.js';
 export type { PlayerOptions, PlayerState } from './HrefPlayer.js';
 export type { TextState } from './state.js';
+export type { ViewerOptions, ViewerStyles } from './viewer.js';
 export type * from '../core/types.js';

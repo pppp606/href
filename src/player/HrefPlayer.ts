@@ -7,7 +7,7 @@
 import type { HrefDocument } from '../core/types.js';
 import { PlaybackEngine } from './engine.js';
 import { StateReconstructor } from './state.js';
-import { TextViewer } from './viewer.js';
+import { TextViewer, type ViewerStyles } from './viewer.js';
 import type { TextState } from './state.js';
 
 export interface PlayerOptions {
@@ -19,6 +19,8 @@ export interface PlayerOptions {
   autoPlay?: boolean;
   /** Show selection in visualization */
   showSelection?: boolean;
+  /** Custom styles for the viewer */
+  styles?: ViewerStyles;
 }
 
 export interface PlayerState {
@@ -55,6 +57,7 @@ export class HrefPlayer {
       this.viewer = new TextViewer({
         container: options.container,
         showSelection: options.showSelection ?? true,
+        ...(options.styles && { styles: options.styles }),
       });
     }
   }
@@ -160,10 +163,14 @@ export class HrefPlayer {
   /**
    * Attach viewer to container
    */
-  attachViewer(container: HTMLElement, options?: { showSelection?: boolean }): void {
+  attachViewer(
+    container: HTMLElement,
+    options?: { showSelection?: boolean; styles?: ViewerStyles }
+  ): void {
     this.viewer = new TextViewer({
       container,
       showSelection: options?.showSelection ?? true,
+      ...(options?.styles && { styles: options.styles }),
     });
 
     // Render current state

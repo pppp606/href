@@ -14,7 +14,7 @@ A comprehensive event capture and replay system for text editing interactions. H
 ## Installation
 
 ```bash
-npm install href
+npm install @pppp606/href
 ```
 
 ## Quick Start
@@ -22,7 +22,7 @@ npm install href
 ### Recording
 
 ```typescript
-import { HrefRecorder } from 'href';
+import { HrefRecorder } from '@pppp606/href';
 
 // Create recorder
 const recorder = new HrefRecorder({
@@ -45,7 +45,7 @@ const json = recorder.exportJSON();
 ### Playback
 
 ```typescript
-import { HrefPlayer } from 'href';
+import { HrefPlayer } from '@pppp606/href/player';
 
 // Create player with container
 const player = new HrefPlayer({
@@ -98,7 +98,44 @@ interface PlayerOptions {
   container?: HTMLElement;      // Container for visualization
   speed?: number;               // Playback speed multiplier (default: 1.0)
   showSelection?: boolean;      // Show selection highlight (default: true)
+  styles?: ViewerStyles;        // Custom styles for the viewer
 }
+
+interface ViewerStyles {
+  // Container styles
+  fontFamily?: string;          // Default: 'monospace'
+  fontSize?: string;            // Default: '14px'
+  lineHeight?: string;          // Default: '1.6'
+  padding?: string;             // Default: '1rem'
+  border?: string;              // Default: '1px solid #888'
+  borderRadius?: string;        // Default: '6px'
+  background?: string;          // Default: '#fff'
+  minHeight?: string;           // Default: '300px'
+  whiteSpace?: string;          // Default: 'pre-wrap'
+  color?: string;               // Default: inherit
+
+  // Selection highlight color
+  selectionBackground?: string; // Default: 'rgba(0, 0, 0, 0.2)'
+}
+```
+
+**Example with custom styles:**
+
+```typescript
+const player = new HrefPlayer({
+  container: document.getElementById('viewer'),
+  speed: 1.0,
+  styles: {
+    fontFamily: 'serif',
+    fontSize: '16px',
+    background: '#f5f5f5',
+    border: '2px solid #000',
+    borderRadius: '12px',
+    padding: '2rem',
+    color: '#333',
+    selectionBackground: '#ffeb3b',
+  }
+});
 ```
 
 #### Methods
@@ -111,6 +148,8 @@ interface PlayerOptions {
 - `seek(time: number): void` - Seek to time in milliseconds
 - `setSpeed(speed: number): void` - Set playback speed
 - `getState(): PlayerState` - Get current player state
+- `attachViewer(container: HTMLElement, options?: { showSelection?: boolean; styles?: ViewerStyles }): void` - Attach viewer to a new container
+- `detachViewer(): void` - Detach and clear viewer
 
 ## Document Format
 

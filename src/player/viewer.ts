@@ -6,19 +6,39 @@
 
 import type { TextState } from './state.js';
 
+export interface ViewerStyles {
+  /** Container styles */
+  fontFamily?: string;
+  fontSize?: string;
+  lineHeight?: string;
+  padding?: string;
+  border?: string;
+  borderRadius?: string;
+  background?: string;
+  minHeight?: string;
+  whiteSpace?: string;
+  color?: string;
+
+  /** Selection highlight color */
+  selectionBackground?: string;
+}
+
 export interface ViewerOptions {
   container: HTMLElement;
   showSelection?: boolean;
+  styles?: ViewerStyles;
 }
 
 export class TextViewer {
   private container: HTMLElement;
   private textElement: HTMLElement;
   private showSelection: boolean;
+  private styles: ViewerStyles;
 
   constructor(options: ViewerOptions) {
     this.container = options.container;
     this.showSelection = options.showSelection ?? true;
+    this.styles = options.styles ?? {};
 
     this.setupDOM();
     this.textElement = this.container.querySelector('.href-viewer-text')!;
@@ -31,17 +51,23 @@ export class TextViewer {
     this.container.innerHTML = '';
     this.container.className = 'href-viewer';
     this.container.style.position = 'relative';
-    this.container.style.fontFamily = 'monospace';
-    this.container.style.fontSize = '14px';
-    this.container.style.lineHeight = '1.6';
-    this.container.style.padding = '1rem';
-    this.container.style.border = '1px solid #888';
-    this.container.style.borderRadius = '6px';
-    this.container.style.background = '#fff';
-    this.container.style.minHeight = '300px';
-    this.container.style.whiteSpace = 'pre-wrap';
+
+    // Apply default or custom styles
+    this.container.style.fontFamily = this.styles.fontFamily ?? 'monospace';
+    this.container.style.fontSize = this.styles.fontSize ?? '14px';
+    this.container.style.lineHeight = this.styles.lineHeight ?? '1.6';
+    this.container.style.padding = this.styles.padding ?? '1rem';
+    this.container.style.border = this.styles.border ?? '1px solid #888';
+    this.container.style.borderRadius = this.styles.borderRadius ?? '6px';
+    this.container.style.background = this.styles.background ?? '#fff';
+    this.container.style.minHeight = this.styles.minHeight ?? '300px';
+    this.container.style.whiteSpace = this.styles.whiteSpace ?? 'pre-wrap';
     this.container.style.wordBreak = 'break-word';
     this.container.style.overflowWrap = 'break-word';
+
+    if (this.styles.color) {
+      this.container.style.color = this.styles.color;
+    }
 
     // Text content
     const textElement = document.createElement('div');
@@ -50,16 +76,23 @@ export class TextViewer {
     this.container.appendChild(textElement);
 
     // Add selection styles
-    if (!document.getElementById('href-viewer-styles')) {
-      const style = document.createElement('style');
-      style.id = 'href-viewer-styles';
-      style.textContent = `
-        .href-viewer-selection {
-          background: rgba(0, 0, 0, 0.2);
-        }
-      `;
-      document.head.appendChild(style);
+    const selectionBg = this.styles.selectionBackground ?? 'rgba(0, 0, 0, 0.2)';
+    const styleId = 'href-viewer-styles';
+
+    // Remove existing styles if present
+    const existingStyle = document.getElementById(styleId);
+    if (existingStyle) {
+      existingStyle.remove();
     }
+
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+      .href-viewer-selection {
+        background: ${selectionBg};
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   /**
