@@ -1,4 +1,4 @@
-# Kakiato (書き跡)
+# Kakiato
 
 **Capturing the traces of writing.**
 
