@@ -1,7 +1,7 @@
 {
-  "name": "@pppp606/href",
-  "version": "0.1.1",
-  "description": "High-Resolution Edit Format - A comprehensive event capture and replay system for text editing interactions",
+  "name": "@pppp606/kakiato",
+  "version": "0.1.0",
+  "description": "Kakiato (書き跡) - Capturing the traces of writing. A comprehensive event capture and replay system for text editing interactions.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -48,12 +48,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pppp606/href.git"
+    "url": "https://github.com/pppp606/kakiato.git"
   },
   "bugs": {
-    "url": "https://github.com/pppp606/href/issues"
+    "url": "https://github.com/pppp606/kakiato/issues"
   },
-  "homepage": "https://github.com/pppp606/href#readme",
+  "homepage": "https://github.com/pppp606/kakiato#readme",
   "devDependencies": {
     "@types/node": "^22.10.2",
     "@typescript-eslint/eslint-plugin": "^8.18.2",

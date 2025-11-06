@@ -1,6 +1,10 @@
-# HREF - High-Resolution Edit Format
+# Kakiato (書き跡)
 
-A comprehensive event capture and replay system for text editing interactions. HREF records every keystroke, IME input, selection change, and editing event with precise timing, allowing you to replay and analyze text editing sessions.
+**Capturing the traces of writing.**
+
+A comprehensive event capture and replay system for text editing interactions. Kakiato records every keystroke, IME input, selection change, and editing event with precise timing, allowing you to replay and analyze text editing sessions.
+
+Formerly known as HREF (High-Resolution Edit Format).
 
 ## Features
 
@@ -14,7 +18,7 @@ A comprehensive event capture and replay system for text editing interactions. H
 ## Installation
 
 ```bash
-npm install @pppp606/href
+npm install @pppp606/kakiato
 ```
 
 ## Quick Start
@@ -22,7 +26,7 @@ npm install @pppp606/href
 ### Recording
 
 ```typescript
-import { HrefRecorder } from '@pppp606/href';
+import { HrefRecorder } from '@pppp606/kakiato';
 
 // Create recorder
 const recorder = new HrefRecorder({
@@ -45,7 +49,7 @@ const json = recorder.exportJSON();
 ### Playback
 
 ```typescript
-import { HrefPlayer } from '@pppp606/href/player';
+import { HrefPlayer } from '@pppp606/kakiato/player';
 
 // Create player with container
 const player = new HrefPlayer({
