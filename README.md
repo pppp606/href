@@ -18,7 +18,7 @@ Formerly known as HREF (High-Resolution Edit Format).
 ## Installation
 
 ```bash
-npm install @pppp606/kakiato
+npm install kakiato
 ```
 
 ## Quick Start
@@ -26,7 +26,7 @@ npm install @pppp606/kakiato
 ### Recording
 
 ```typescript
-import { HrefRecorder } from '@pppp606/kakiato';
+import { HrefRecorder } from 'kakiato';
 
 // Create recorder
 const recorder = new HrefRecorder({
@@ -49,7 +49,7 @@ const json = recorder.exportJSON();
 ### Playback
 
 ```typescript
-import { HrefPlayer } from '@pppp606/kakiato/player';
+import { HrefPlayer } from 'kakiato/player';
 
 // Create player with container
 const player = new HrefPlayer({

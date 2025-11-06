@@ -1,5 +1,5 @@
 {
-  "name": "@pppp606/kakiato",
+  "name": "kakiato",
   "version": "0.1.0",
   "description": "Kakiato (書き跡) - Capturing the traces of writing. A comprehensive event capture and replay system for text editing interactions.",
   "type": "module",
