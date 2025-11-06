@@ -63,7 +63,7 @@ export class HrefPlayer {
   }
 
   /**
-   * Load an HREF document
+   * Load a Kakiato document
    */
   load(document: HrefDocument): void {
     this.document = document;

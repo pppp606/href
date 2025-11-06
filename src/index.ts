@@ -1,5 +1,5 @@
 /**
- * HREF - High-Resolution Edit Format
+ * Kakiato - Capturing the traces of writing
  *
  * A comprehensive event capture and replay system for text editing interactions.
  */

@@ -4,7 +4,6 @@
 
 A comprehensive event capture and replay system for text editing interactions. Kakiato records every keystroke, IME input, selection change, and editing event with precise timing, allowing you to replay and analyze text editing sessions.
 
-Formerly known as HREF (High-Resolution Edit Format).
 
 ## Features
 
@@ -144,7 +143,7 @@ const player = new HrefPlayer({
 
 #### Methods
 
-- `load(document: HrefDocument): void` - Load HREF document
+- `load(document: HrefDocument): void` - Load document
 - `loadJSON(json: string): void` - Load from JSON string
 - `play(): void` - Start playback
 - `pause(): void` - Pause playback
@@ -157,7 +156,7 @@ const player = new HrefPlayer({
 
 ## Document Format
 
-HREF documents follow a structured JSON format:
+Kakiato documents follow a structured JSON format:
 
 ```json
 {
@@ -196,7 +195,7 @@ HREF documents follow a structured JSON format:
 
 ## Event Types
 
-HREF captures the following event types:
+Kakiato captures the following event types:
 
 - **keyboard** - `keydown`, `keyup`
 - **input** - `beforeinput`, `input`

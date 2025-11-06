@@ -1,11 +1,11 @@
 /**
- * JSON Schema definition for HREF v0.1 documents.
+ * JSON Schema definition for Kakiato v0.1 documents.
  */
 
 export const hrefDocumentSchema = {
   $schema: "http://json-schema.org/draft-07/schema#",
-  $id: "https://href.dev/schemas/v0.1/document.json",
-  title: "High-Resolution Edit Format (HREF) Document",
+  $id: "https://kakiato.dev/schemas/v0.1/document.json",
+  title: "Kakiato Document",
   type: "object",
   additionalProperties: false,
   required: ["version", "session", "initial_text", "events"],

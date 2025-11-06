@@ -1,9 +1,8 @@
 /**
- * High-Resolution Edit Format (HREF) type definitions.
+ * Kakiato type definitions.
  *
- * These interfaces mirror the v0.1 draft schema outlined in the
- * project documentation and are intended to be shared across recorder
- * and player implementations.
+ * These interfaces define the Kakiato document format v0.1 and are
+ * shared across recorder and player implementations.
  */
 
 export type HrefVersion = "0.1";

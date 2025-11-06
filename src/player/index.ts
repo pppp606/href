@@ -1,7 +1,7 @@
 /**
- * HREF Player
+ * Kakiato Player
  *
- * Replays editing events from HREF documents.
+ * Replays editing events from Kakiato documents.
  */
 
 export { HrefPlayer } from './HrefPlayer.js';

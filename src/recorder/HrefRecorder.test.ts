@@ -48,7 +48,7 @@ describe('HrefRecorder', () => {
   });
 
   describe('getDocument', () => {
-    it('should return a valid HREF document', () => {
+    it('should return a valid Kakiato document', () => {
       recorder.start();
       recorder.stop();
 

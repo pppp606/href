@@ -1,7 +1,7 @@
 /**
- * HREF Recorder
+ * Kakiato Recorder
  *
- * Captures editing events and generates HREF documents.
+ * Captures editing events and generates Kakiato documents.
  */
 
 export { HrefRecorder } from './HrefRecorder.js';
