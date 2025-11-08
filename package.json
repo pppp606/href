@@ -1,6 +1,6 @@
 {
   "name": "kakiato",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Kakiato - Capturing the traces of writing. A comprehensive event capture and replay system for text editing interactions.",
   "type": "module",
   "main": "./dist/index.js",
